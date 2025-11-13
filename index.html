@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casa Nustra - Digital Concierge</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Link to our new CSS file -->
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl h-[90vh]">
+        <!-- Category Selection View (Visible by default) -->
+        <div id="category-view" class="flex flex-col h-full bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden p-6">
+            <header class="mb-6 flex flex-col items-center">
+                <!-- Logo Placeholder -->
+                <div id="logo-placeholder" class="mb-4">
+                    <!-- You can replace this div with an <img> tag like: -->
+                    <img src="casanuestra.jpg" alt="Casa Nustra Logo" class="w-35 h-35 rounded-full"> 
+                    <!--span>LOGO</span-->
+                </div>
+                
+                <h1 class="text-2xl font-bold text-center text-green-800 dark:text-green-300">Casa Nustra Concierge</h1>
+                <p class="text-sm text-center text-gray-600 dark:text-gray-400">Please select a category</p>
+            </header>
+            <main class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button class="category-button" data-category="food" data-title="Φαγητό">
+                    <span class="text-2xl">🍲</span>
+                    <span>Φαγητό</span>
+                </button>
+                <button class="category-button" data-category="drinks" data-title="Τσίπουρο/Καφές">
+                    <span class="text-2xl">☕️</span>
+                    <span>Τσίπουρο/Καφές</span>
+                </button>
+                <button class="category-button" data-category="sweets" data-title="Γλυκό/Παγωτό">
+                    <span class="text-2xl">🍨</span>
+                    <span>Γλυκό/Παγωτό</span>
+                </button>
+                <button class="category-button" data-category="services" data-title="Υπηρεσίες">
+                    <span class="text-2xl">🛒</span>
+                    <span>Υπηρεσίες</span>
+                </button>
+                <button class="category-button" data-category="sights" data-title="Αξιοθέατα/Διαδρομές">
+                    <span class="text-2xl">⛰️</span>
+                    <span>Αξιοθέατα/Διαδρομές</span>
+                </button>
+            </main>
+        </div>
+
+        <!-- Chat View (Hidden by default) -->
+        <div id="chat-view" class="flex flex-col h-full bg-white dark:bg-gray-800 shadow-2xl rounded-2xl overflow-hidden hidden">
+            
+            <!-- Header with Back Button -->
+            <header class="bg-green-800 dark:bg-green-900 text-white p-5 shadow-md z-10 flex items-center relative">
+                <button id="back-button" class="absolute left-4 p-1 rounded-full hover:bg-green-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <div class="flex-grow text-center">
+                    <h1 class="text-2xl font-bold">Casa Nustra Concierge</h1>
+                    <p id="header-subtitle" class="text-sm text-green-100">Your guide to Pramanta & Tzoumerka</p>
+                </div>
+            </header>
+
+            <!-- Chat Messages -->
+            <main id="chat-messages" class="flex-grow p-6 space-y-4 overflow-y-auto">
+                <!-- Messages will be injected here by JavaScript -->
+            </main>
+
+            <!-- Loading Spinner -->
+            <div id="loading-spinner" class="px-6 pb-2 hidden">
+                <div class="flex items-center justify-start">
+                    <div class="bg-gray-200 dark:bg-gray-700 rounded-lg p-4 max-w-xs lg:max-w-md">
+                        <div class="flex items-center space-x-2">
+                            <svg class="animate-spin h-5 w-5 text-gray-600 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="text-sm text-gray-600 dark:text-gray-300">Thinking...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <footer class="bg-white dark:bg-gray-800 p-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <input type="text" id="message-input" placeholder="Ask about food, trekking, sights..." class="flex-grow w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-600 dark:focus:ring-green-500">
+                    <button id="send-button" class="bg-green-700 text-white p-3 rounded-xl hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-600 dark:focus:ring-green-500 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                        </svg>
+                    </button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Link to our new JavaScript file -->
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* New Logo Placeholder Style */
+#logo-placeholder {
+    width: 10rem; /* 160px */
+    height: 10rem; /* 160px */
+    border-radius: 9999px; /* circular */
+    background-color: #e5e7eb; /* bg-gray-200 */
+    border: 4px solid #ffffff; /* border-white */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+    color: #4b5563; /* text-gray-600 */
+}
+
+.dark #logo-placeholder {
+    background-color: #4b5563; /* dark:bg-gray-600 */
+    border-color: #374151; /* dark:border-gray-700 */
+    color: #d1d5db; /* dark:text-gray-300 */
+}
+
+
+/* Style for the new category buttons */
+.category-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* 8px */
+    padding: 1.5rem; /* 24px */
+    font-size: 1.125rem; /* 18px */
+    font-weight: 600;
+    color: #166534; /* dark:text-green-300 */
+    background-color: #f0fdf4; /* dark:bg-gray-700 */
+    border-radius: 1rem; /* 16px */
+    border: 1px solid #d1fae5; /* dark:border-gray-600 */
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.category-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background-color: #dcfce7; /* dark:bg-gray-600 */
+}
+
+.dark .category-button {
+    color: #6ee7b7;
+    background-color: #374151;
+    border-color: #4b5563;
+}
+
+.dark .category-button:hover {
+    background-color: #4b5563;
+}
+
+
+/* Custom scrollbar for chat */
+#chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+#chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+#chat-messages::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+#chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+/* Dark mode scrollbar */
+.dark #chat-messages::-webkit-scrollbar-track {
+    background: #2d3748; /* dark:bg-gray-700 */
+}
+.dark #chat-messages::-webkit-scrollbar-thumb {
+    background: #4a5568; /* dark:bg-gray-500 */
+}
+.dark #chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #718096; /* dark:bg-gray-300 */
+}
