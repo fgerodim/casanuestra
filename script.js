@@ -2,14 +2,10 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- DOM Elements ---
-    // Views
+    // (Same as before)
     const categoryView = document.getElementById('category-view');
     const chatView = document.getElementById('chat-view');
-
-    // Category Buttons
     const categoryButtons = document.querySelectorAll('.category-button');
-    
-    // Chat Elements
     const chatMessages = document.getElementById('chat-messages');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
@@ -18,15 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerSubtitle = document.getElementById('header-subtitle');
 
     // --- State ---
-    let currentCategory = null; // e.g., 'food', 'sights'
-    let currentCategoryTitle = null; // e.g., 'Φαγητό', 'Αξιοθέατα/Διαδρομές'
+    // (Same as before)
+    let currentCategory = null; 
+    let currentCategoryTitle = null;
 
-    // --- API Config ---
-    const apiKey = ""; // Leave as-is, will be handled by the environment
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-    // Base System prompt
-    const BASE_SYSTEM_PROMPT = "You are a friendly, warm, and expert local concierge for 'Casa Nustra', a beautiful guest house in Pramanta, Boreion Tzoumerkon, Greece. Your sole purpose is to provide helpful, specific, and inspiring recommendations to guests. ALWAYS focus your answers on the local area of Pramanta, the broader Tzoumerka region, Arta, and the Epirus region. Be welcoming and encourage guests to enjoy their stay. If you find sources, cite them to help the guest.";
+    // --- NEW API Config ---
+    // We NO LONGER call Google directly. We call our OWN server.
+    const ourServerUrl = 'http://localhost:3000/chat';
 
     // --- Functions ---
 
@@ -34,12 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
      * Shows the main category selection view
      */
     function showCategoryView() {
+        // (This function is unchanged)
         chatView.classList.add('hidden');
         categoryView.classList.remove('hidden');
         currentCategory = null;
         currentCategoryTitle = null;
-        chatMessages.innerHTML = ''; // Clear chat history
-        headerSubtitle.textContent = "Your guide to Pramanta & Tzoumerka"; // Reset subtitle
+        chatMessages.innerHTML = ''; 
+        headerSubtitle.textContent = "Your guide to Pramanta & Tzoumerka"; 
     }
 
     /**
@@ -48,18 +43,18 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {string} categoryTitle - The display title (e.g., 'Φαγητό')
      */
     function showChatView(categoryKey, categoryTitle) {
+        // (This function is unchanged)
         currentCategory = categoryKey;
         currentCategoryTitle = categoryTitle;
         
         categoryView.classList.add('hidden');
         chatView.classList.remove('hidden');
         
-        chatMessages.innerHTML = ''; // Clear previous messages
-        headerSubtitle.textContent = `Topic: ${categoryTitle}`; // Set subtitle
-        messageInput.placeholder = `Ask about ${categoryTitle}...`; // Update placeholder
+        chatMessages.innerHTML = '';
+        headerSubtitle.textContent = `Topic: ${categoryTitle}`; 
+        messageInput.placeholder = `Ask about ${categoryTitle}...`; 
 
-        // Add a specific welcome message
-        let welcomeMsg = `You've selected '${categoryTitle}'. How can I help you find the best ${categoryKey} in the Pramanta area?`;
+        let welcomeMsg = `Έχεις επιλέξει '${categoryTitle}'. Πώς μπορώ να σε βοηθήσω να βρεις τα καλύτερα ${categoryKey} στην περιοχή των Πραμάντων;`;
         addMessage(welcomeMsg, 'assistant');
     }
 
@@ -70,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {Array<Object>} sources - Array of source objects from grounding.
      */
     function addMessage(message, sender, sources = []) {
-        // ... (This function is unchanged from the previous version) ...
+        // (This function is unchanged)
         const messageWrapper = document.createElement('div');
         messageWrapper.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
         
@@ -122,95 +117,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Fetches a response from the Gemini API with exponential backoff.
-     * @param {string} url - The API endpoint.
-     * @param {object} options - The fetch options (method, headers, body).
-     * @param {number} retries - The number of retries left.
-     * @param {number} delay - The delay in ms before retrying.
-     * @returns {Promise<object>} - The JSON response from the API.
-     */
-    async function fetchWithBackoff(url, options, retries = 3, delay = 1000) {
-        // ... (This function is unchanged from the previous version) ...
-        try {
-            const response = await fetch(url, options);
-            if (!response.ok) {
-                if (response.status === 429 && retries > 0) {
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return fetchWithBackoff(url, options, retries - 1, delay * 2);
-                }
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            if (retries > 0) {
-                await new Promise(resolve => setTimeout(resolve, delay));
-                return fetchWithBackoff(url, options, retries - 1, delay * 2);
-            }
-            console.error("Fetch error after retries:", error);
-            throw error;
-        }
-    }
-
-    /**
-     * Gets a response from the Gemini API, now aware of the category.
+     * Gets a response from our NEW backend server.
      * @param {string} query - The user's query.
      */
     async function getBotResponse(query) {
         loadingSpinner.classList.remove('hidden');
 
-        // Add location context
-        const userQueryWithContext = `${query} (recommendations near Pramanta, Tzoumerka, Greece)`;
-        
-        // --- Create a specific system prompt based on the category ---
-        let specificSystemPrompt = BASE_SYSTEM_PROMPT;
-        if (currentCategory) {
-            specificSystemPrompt += `\n\n**IMPORTANT**: The user has pre-selected the category "${currentCategoryTitle}" (${currentCategory}). You MUST focus your entire response on this specific topic. For example, if the category is 'food', only talk about food. If it's 'sights', only talk about sights and routes.`;
-        }
-        // This is where we will later add logic to use your CSV data.
-        // For now, this prompt guides the RAG search.
-        
+        // This is the data we will send to our server as JSON
         const payload = {
-            contents: [{
-                parts: [{ text: userQueryWithContext }]
-            }],
-            tools: [{
-                "google_search": {}
-            }],
-            systemInstruction: {
-                parts: [{ text: specificSystemPrompt }]
-            },
+            query: query,
+            category: currentCategory // We also send the selected category
         };
 
         try {
-            const result = await fetchWithBackoff(apiUrl, {
+            // --- THIS IS THE MAIN CHANGE ---
+            // We now 'fetch' from our OWN server, not Google's
+            const response = await fetch(ourServerUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload) // Send the user's query and category
             });
-            
-            const candidate = result.candidates?.[0];
-            let text = "I'm sorry, I couldn't find an answer for that. Could you ask in a different way?";
-            let sources = [];
 
-            if (candidate && candidate.content?.parts?.[0]?.text) {
-                text = candidate.content.parts[0].text;
-
-                const groundingMetadata = candidate.groundingMetadata;
-                if (groundingMetadata && groundingMetadata.groundingAttributions) {
-                    sources = groundingMetadata.groundingAttributions
-                        .map(attribution => ({
-                            uri: attribution.web?.uri,
-                            title: attribution.web?.title,
-                        }))
-                        .filter(source => source.uri && source.title);
-                }
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+
+            // Get the JSON response from our server
+            // This will be our "dummy" message for now
+            const result = await response.json(); 
             
-            addMessage(text, 'assistant', sources);
+            // Add the server's test message to the chat
+            addMessage(result.text, 'assistant', result.sources);
 
         } catch (error) {
-            console.error('Error fetching bot response:', error);
-            addMessage("I'm having some technical difficulties right now. Please try again in a moment.", 'assistant');
+            console.error('Error fetching bot response from our server:', error);
+            addMessage("I'm having trouble connecting to my server. Please make sure it's running.", 'assistant');
         } finally {
             loadingSpinner.classList.add('hidden');
         }
@@ -220,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * Handles sending a message (from button click or Enter key).
      */
     function sendMessage() {
+        // (This function is unchanged)
         const query = messageInput.value.trim();
         if (query === "") return;
 
@@ -230,8 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Event Listeners ---
-
-    // Listen for clicks on all category buttons
+    // (All unchanged)
     categoryButtons.forEach(button => {
         button.addEventListener('click', () => {
             const categoryKey = button.dataset.category;
@@ -239,14 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
             showChatView(categoryKey, categoryTitle);
         });
     });
-
-    // Listen for click on the Back button
     backButton.addEventListener('click', showCategoryView);
-
-    // Listen for send button click
     sendButton.addEventListener('click', sendMessage);
-
-    // Listen for Enter key in input
     messageInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -255,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Initial State ---
-    // Show the category view by default
     showCategoryView();
 
 });

@@ -1,0 +1,9 @@
+#This file tells Git what to IGNORE.
+
+#Ignore the secret API key file
+
+.env
+
+#Ignore all the packages we installed (Render will install its own)
+
+/node_modules
